@@ -1,19 +1,25 @@
 package maingame;
 
 import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.*;
 
 import org.newdawn.slick.*;
+import org.newdawn.slick.state.StateBasedGame;
+
+import MutilSocket.SocketClient;
 
 public class MainGame extends BasicGame
 {
-	List<GamePlayerLayer> _Players = new ArrayList<GamePlayerLayer>();
+	List<GamePlayLayer> _Players = new ArrayList<GamePlayLayer>();
 	static final int SCREENWIDTH = 1200;
 	static final int SCREENHEIGHT = 600;
 	
 	static public Scene _Scene;
-	
+	static public GameContainer _gc;
+	static public Graphics _g;
 	List<Integer> _HeldKeys = new ArrayList<Integer>();
 	
 	//khai bao log va viet log
@@ -35,7 +41,7 @@ public class MainGame extends BasicGame
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
-		MainGame.setScene(new GamePlayScene());
+		MainGame.setScene(new LoginScene());
 	}
 	
 	@Override
@@ -47,8 +53,9 @@ public class MainGame extends BasicGame
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException
 	{
+		MainGame._g = g;
 		_Scene.render();
-		
+
 	}
 	
 	public void keyPressed(int key, char c)
@@ -63,6 +70,19 @@ public class MainGame extends BasicGame
 		_HeldKeys.remove((Integer)key);
 	}
 	
+	@Override
+    public boolean closeRequested()
+    {
+		
+		try {
+			Globals.closeConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.exit(0); // Use this if you want to quit the app.
+		return false;
+    }
 	
 	static Scene getScene()
 	{
@@ -78,11 +98,14 @@ public class MainGame extends BasicGame
 	{
 		try
 		{
+			Globals.initSocket();
 			AppGameContainer appgc;
 			appgc = new AppGameContainer(new MainGame("Bust a move"));
 			appgc.setDisplayMode(SCREENWIDTH, SCREENHEIGHT, false);
 			appgc.setTargetFrameRate(60);
+			appgc.setUpdateOnlyWhenVisible(false);
 			appgc.start();
+			//init socket
 		}
 		catch (SlickException ex)
 		{

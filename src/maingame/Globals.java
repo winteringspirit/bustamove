@@ -1,12 +1,26 @@
 package maingame;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import MutilSocket.ClientListener;
+import MutilSocket.SocketClient;
+
 public class Globals
 {
+	//collision
 	static float normalx = 0, normaly = 0; 
   
 	static int BubbleColor = 8;
 	
-// returns true if the boxes are colliding (velocities are not used)
+	// returns true if the boxes are colliding (velocities are not used)
 	public static boolean AABBCheck(Box b1, Box b2)
 	{
 		return !(b1.x + b1.w < b2.x || b1.x > b2.x + b2.w || b1.y + b1.h < b2.y || b1.y > b2.y + b2.h);
@@ -51,7 +65,7 @@ public class Globals
 	return true;
 	}
 
-// returns a box the spans both a current box and the destination box
+	// returns a box the spans both a current box and the destination box
 	public static Box GetSweptBroadphaseBox(Box b)
 	{
     Box broadphasebox = new Box(0.0f, 0.0f, 0.0f, 0.0f);
@@ -211,5 +225,61 @@ public class Globals
 		ci.CollisionTime = 1;
 		return ci;
 	}
+
+	//socket
+	// The client socket
+	public static Socket clientSocket = null;
+	// The output stream
+	public static PrintStream os = null;
+	// The input stream
+	public static DataInputStream is = null;
+
+	public static BufferedReader inputLine = null;
 	
+	public static ArrayList<String> ServerMessage = new ArrayList<String>();
+	
+	public static String userName = "";
+	
+	public static void initSocket()
+	{
+		final int PORT = 2222;
+		final String HOST = "localhost";
+
+		System.out
+				.println("Usage: java MultiThreadChatClient <host> <portNumber>\n"
+						+ "Now using host=" + HOST + ", portNumber=" + PORT);
+
+		try {
+			clientSocket = new Socket(HOST, PORT);
+			inputLine = new BufferedReader(new InputStreamReader(System.in));
+			os = new PrintStream(clientSocket.getOutputStream());
+			is = new DataInputStream(clientSocket.getInputStream());
+		} catch (UnknownHostException e) {
+			System.err.println("Don't know about host " + HOST);
+		} catch (IOException e) {
+			System.err
+					.println("Couldn't get I/O for the connection to the host "
+							+ HOST);
+		}
+
+		if (clientSocket != null && os != null && is != null) {
+			/* Create a thread to read from the server. */
+			new Thread(new ClientListener()).start();
+		}
+	}
+	
+	//send data to server
+	public static void sendData(String x)
+	{
+		Globals.os.println(x);
+	}
+	
+	public static void closeConnection() throws IOException
+	{
+		Globals.sendData(String.valueOf(Message.QUITGAME.value()));
+		Globals.sendData(String.valueOf(Message.CANCELHOST.value()));
+		os.close();
+		is.close();
+		clientSocket.close();
+	}
 }

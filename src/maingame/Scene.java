@@ -1,8 +1,16 @@
 package maingame;
 
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
 public class Scene extends Node {
 	
 	public Scene(){
+		
+	}
+	
+	public void init(GameContainer gc)
+	{
 		
 	}
 	

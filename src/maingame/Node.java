@@ -102,11 +102,19 @@ public class Node extends Image{
 	public void keyPressed(int key)
 	{
 	}
-	
 	public void keyHold(List<Integer> _HeldKeys)
 	{
 	}
 	
+	public void keyHoldPlayer(String idPlayer,int _HeldKeys)
+	{
+		
+	}
+	
+	public void keyRelease(String key)
+	{
+		
+	}
 	public void keyReleased(int key)
 	{
 	}

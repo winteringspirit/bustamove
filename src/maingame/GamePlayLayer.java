@@ -1,10 +1,16 @@
 package maingame;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import org.newdawn.slick.*;
 
-public class GamePlayerLayer extends Layer {
+import MutilSocket.SocketClient;
+
+public class GamePlayLayer extends Layer {
 
 	Sprite GameBoard;
 	AnimateSprite test;
@@ -47,7 +53,7 @@ public class GamePlayerLayer extends Layer {
 	BubbleBullet _NewBBWaiting;
 	// total same color bubbles that you need to fire at to destroy, value 2
 	// means 3 bubble(include 2 instance bubble and one you fire)
-	GamePlayerLayer() throws SlickException {
+	public GamePlayLayer() throws SlickException{
 
 		_Machine 	= new Sprite(cannonsearchpath + "machine.png");
 		_Barrel 	= new Sprite(cannonsearchpath + "barrel.png");
@@ -130,8 +136,9 @@ public class GamePlayerLayer extends Layer {
 		//create bubble bullet first
 		creatNewBubbleBullet();
 		setWaitingBubbleBullet();
+	
 	}
-
+		
 	public void turnLeft() {
 		if (_RotateAngle > -80) {
 			_RotateAngle -= _RotateSpeed;
@@ -393,7 +400,6 @@ public class GamePlayerLayer extends Layer {
 					explodesprite.setAutoRelease();
 					this.addChild(explodesprite);
 				} catch (SlickException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

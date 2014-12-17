@@ -1,7 +1,16 @@
 package maingame;
 
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
 
 public class Layer extends Node{
+	
+	public void init(GameContainer gc)
+	{
+		
+	}
+	
 	
 	public void update(float deltatime)
 	{
