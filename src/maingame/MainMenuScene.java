@@ -7,6 +7,7 @@ public class MainMenuScene extends Scene{
 	{
 		_MainMenuLayer = new MainMenuLayer();
 		this.addChild(_MainMenuLayer);
+		Globals.gameStatus = GameStatus.MAINMENU;
 	}
 
 	public void keyPressed(int key)

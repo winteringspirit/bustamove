@@ -1,14 +1,7 @@
 package maingame;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
-
 import org.newdawn.slick.*;
-
-import MutilSocket.SocketClient;
 
 public class GamePlayLayer extends Layer {
 
@@ -53,25 +46,31 @@ public class GamePlayLayer extends Layer {
 	BubbleBullet _NewBBWaiting;
 	// total same color bubbles that you need to fire at to destroy, value 2
 	// means 3 bubble(include 2 instance bubble and one you fire)
-	public GamePlayLayer() throws SlickException{
+	public GamePlayLayer()
+	{
 
-		_Machine 	= new Sprite(cannonsearchpath + "machine.png");
-		_Barrel 	= new Sprite(cannonsearchpath + "barrel.png");
-		_Dais 		= new Sprite(cannonsearchpath + "dais.png");
-		_Wheel 		= new Sprite(cannonsearchpath + "wheel.png");
-		_Engine2 	= new Sprite(cannonsearchpath + "engine2.png");
-		_Basket1	= new Sprite(cannonsearchpath + "basket0.png");
-		_Basket2	= new Sprite(cannonsearchpath + "basket1.png");
-		_PlayBoard 	= new Sprite(backgroundsearchpath + "board2.png");
-		_Arrows 	= new AnimateSprite(cannonsearchpath + "arrows.png", 3, 1);
-		_Engine 	= new AnimateSprite(cannonsearchpath + "engine.png", 4, 1);
-		_Bub 	= new AnimateSprite(charactersearchpath + "Bub.png", 3, 3);
-		_Mog 	= new AnimateSprite(charactersearchpath + "Mog.png", 8, 1);
-		
-		_LeftFence = new Fence("vertical.png");
-		_RightFence = new Fence("vertical.png");
-		_TopFence = new Fence("horizontal.png");
-		_BotFence = new Fence("bhorizontal.png");
+		try {
+			_Machine 	= new Sprite(cannonsearchpath + "machine.png");
+			_Barrel 	= new Sprite(cannonsearchpath + "barrel.png");
+			_Dais 		= new Sprite(cannonsearchpath + "dais.png");
+			_Wheel 		= new Sprite(cannonsearchpath + "wheel.png");
+			_Engine2 	= new Sprite(cannonsearchpath + "engine2.png");
+			_Basket1	= new Sprite(cannonsearchpath + "basket0.png");
+			_Basket2	= new Sprite(cannonsearchpath + "basket1.png");
+			_PlayBoard 	= new Sprite(backgroundsearchpath + "board2.png");
+			_Arrows 	= new AnimateSprite(cannonsearchpath + "arrows.png", 3, 1);
+			_Engine 	= new AnimateSprite(cannonsearchpath + "engine.png", 4, 1);
+			_Bub 	= new AnimateSprite(charactersearchpath + "Bub.png", 3, 3);
+			_Mog 	= new AnimateSprite(charactersearchpath + "Mog.png", 8, 1);
+			
+			_LeftFence = new Fence("vertical.png");
+			_RightFence = new Fence("vertical.png");
+			_TopFence = new Fence("horizontal.png");
+			_BotFence = new Fence("bhorizontal.png");
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		_PlayBoard.setPosition(CannonPositionX - 15, CannonPositionY + 250);
 		SpawnPositionX = _PlayBoard.getPositionX() - _SpawnCount * 32 / 2 + 11;

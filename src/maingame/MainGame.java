@@ -1,16 +1,10 @@
 package maingame;
 
 import java.io.*;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.*;
 
 import org.newdawn.slick.*;
-import org.newdawn.slick.state.StateBasedGame;
-
-import MutilSocket.SocketClient;
-
 public class MainGame extends BasicGame
 {
 	List<GamePlayLayer> _Players = new ArrayList<GamePlayLayer>();
@@ -21,7 +15,6 @@ public class MainGame extends BasicGame
 	static public GameContainer _gc;
 	static public Graphics _g;
 	List<Integer> _HeldKeys = new ArrayList<Integer>();
-	
 	//khai bao log va viet log
 	public static final Logger LOGGER = Logger.getLogger(MainGame.class.getName());
 	static {
@@ -37,6 +30,7 @@ public class MainGame extends BasicGame
 	{
 		super(gamename);
 		_Scene = new Scene();
+		Globals.gameStatus = GameStatus.LOGIN;
 	}
 
 	@Override
@@ -73,14 +67,24 @@ public class MainGame extends BasicGame
 	@Override
     public boolean closeRequested()
     {
-		
-		try {
-			Globals.closeConnection();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (Globals.gameStatus != GameStatus.PLAYINGGAME) 
+		{
+			if (Globals.gameStatus == GameStatus.WAITINGSCENE) {
+				if (!Globals.isHost)
+					Globals.sendData(String.valueOf(Message.ABANDON_JOIN
+							.value()));
+				else
+					Globals.sendData(String.valueOf(Message.ABANDON_HOST
+							.value()));
+			}
+			try {
+				Globals.closeConnection();
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.exit(0); // Use this if you want to quit the app.
 		}
-		System.exit(0); // Use this if you want to quit the app.
 		return false;
     }
 	

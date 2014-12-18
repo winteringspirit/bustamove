@@ -1,10 +1,5 @@
 package maingame;
 
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-
 public class LoginScene extends Scene {
 	
 	private LoginLayer _LoginLayer;

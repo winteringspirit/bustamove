@@ -17,6 +17,7 @@ public class ClientListener implements Runnable {
 		try {
 			while ((responseLine = Globals.is.readLine()) != null) {
 				Globals.ServerMessage.add(responseLine);
+			
 			}
 		} catch (IOException e) {
 			System.err.println("IOException:  " + e);

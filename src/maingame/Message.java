@@ -8,14 +8,19 @@ public enum Message {
 	GETHOSTLIST(2),
 	HOSTGAME(3),
 	JOINGAME(4),
-	ADDPLAYER(5),
+	EDITPLAYER(5),
 	STARTGAME(6),
 	CANCELHOST(7),
 	QUITGAME(8),
 	JOIN_FAIL(9),
 	JOIN_SUCCESSFULL(10),
+	ABANDON_HOST(11),
+	ABANDON_JOIN(12),
 	KEY_LEFT(100), 
-	KEY_RIGHT(110),;
+	KEY_RIGHT(110),
+	KEY_FIRE(120),
+	NO_KEY(130),
+	KEY_PRESS(140);
 	private int _value;
 	
 	private Message(int value) {

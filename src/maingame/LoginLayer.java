@@ -1,14 +1,7 @@
 package maingame;
 
-import java.awt.Font;
-
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.ColorEffect;
-import org.newdawn.slick.gui.TextField;
 
 public class LoginLayer extends Layer{
 
@@ -72,29 +65,23 @@ public class LoginLayer extends Layer{
 			break;
 		}
 		
-		for(int i = 0; i < Globals.ServerMessage.size(); i++)
-		{
+		for (int i = 0; i < Globals.ServerMessage.size(); i++) {
 			int result = Integer.parseInt(Globals.ServerMessage.get(i));
-			if(result == Message.LOGIN_SUCCESSFUL.value())  
-			{
+			if (result == Message.LOGIN_SUCCESSFUL.value()) {
 				Globals.userName = user;
 				Globals.ServerMessage.clear();
 				MainGame.setScene(new MainMenuScene());
+			} else if (result == Message.LOGIN_FAIL_WROND_PASS.value()) {
+				Globals.ServerMessage.clear();
+				loginmessage.setText("Wrong Password");
+				loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150,
+						MainGame.SCREENHEIGHT / 2 + 30);
+			} else if (result == Message.LOGIN_FAIL_ALREADY_LOGIN.value()) {
+				Globals.ServerMessage.clear();
+				loginmessage.setText("Already Logined");
+				loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150,
+						MainGame.SCREENHEIGHT / 2 + 30);
 			}
-			else
-				if(result == Message.LOGIN_FAIL_WROND_PASS.value())
-				{
-					Globals.ServerMessage.clear();
-					loginmessage.setText("Wrong Password");
-					loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150 , MainGame.SCREENHEIGHT /2 + 30);
-				}
-				else
-					if(result == Message.LOGIN_FAIL_ALREADY_LOGIN.value())
-					{
-						Globals.ServerMessage.clear();
-						loginmessage.setText("Already Logined");
-						loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150 , MainGame.SCREENHEIGHT /2 + 30);
-					}
 		}
 	}
 	

@@ -6,8 +6,6 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 public class MainMenuLayer extends Layer {
-	private String searchpath;
-	
 	private Text HostList;
 	
 	int currentselect = 0;
@@ -19,7 +17,7 @@ public class MainMenuLayer extends Layer {
 	private ArrayList<String> listHostUser = new ArrayList<String>();
 	public MainMenuLayer()
 	{
-		searchpath = "resources//sprite//other//";
+		String searchpath = "resources//sprite//other//";
 		try {
 			background = new Sprite("resources//sprite//other//background.png");
 			background.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT / 2);
@@ -68,7 +66,7 @@ public class MainMenuLayer extends Layer {
 			{
 				totalhostcount = Integer.parseInt(parts[1]);
 				String listhostname = "";
-				for(int j = 2; j < parts.length ; j += 2)
+				for(int j = 2; j < parts.length ; j += 5)
 				{
 					listhostname += parts[j] + " (" + parts[j + 1]+ "/4)\n";
 					listHostUser.add(parts[j]);
@@ -80,8 +78,17 @@ public class MainMenuLayer extends Layer {
 			else
 				if(result == maingame.Message.JOIN_SUCCESSFULL.value())
 				{
-					int numberjoiner = Integer.parseInt(parts[1]);
-					MainGame.setScene(new WaitingHostScene(numberjoiner));
+					String userJoin[] = new String[4];
+					for (int k = 0; k < userJoin.length ;k++)
+					{
+						if(parts[k + 1].compareTo("null")!=0)
+							userJoin[k] = parts[k + 1];
+						else
+							userJoin[k] = null;
+					}
+					WaitingHostScene _Scene = new WaitingHostScene();
+					_Scene.setPlayer(userJoin);
+					MainGame.setScene(_Scene);
 				}
 				else
 					if(result == maingame.Message.JOIN_FAIL.value())
@@ -111,13 +118,19 @@ public class MainMenuLayer extends Layer {
 			case Input.KEY_NUMPADENTER:
 				if(currentselect == 0)
 				{
+					Globals.isHost = true;
 					Globals.sendData(String.valueOf(Message.HOSTGAME.value()));
 					Globals.ServerMessage.clear();
-					MainGame.setScene(new WaitingHostScene(1));
+					WaitingHostScene _Scene = new WaitingHostScene();
+					String []userJoin = new String[4];
+					userJoin[0] = Globals.userName;
+					_Scene.setPlayer(userJoin);
+					MainGame.setScene(_Scene);
 				}
 				else
 				{
 					Globals.sendData(String.valueOf(Message.JOINGAME.value()) + "\t" + listHostUser.get(currentselect-1));
+					Globals.isHost = false;
 				}
 				break;
 			case Input.KEY_BACK:

@@ -21,20 +21,12 @@ private String searchpath;
 	// declare bubble cannon
 	Sprite _Dais;
 	AnimateSprite _Mog;
-	Sprite _PlayBoard;
-	
+	Sprite _StartButton, selectArrow;
+
 	public WaitingHostLayer()
 	{
 		searchpath = "resources//sprite//other//";
 		try {
-		//background = new Sprite("resources//sprite//other//background.png");
-		//background.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT / 2);
-		//this.addChild(background);
-
-		//_PlayBoard 	= new Sprite("resources//sprite//background//board2.png");
-		//_PlayBoard.setPosition(CannonPositionX - 15, CannonPositionY + 250);
-		//this.addChild(_PlayBoard);
-
 		_Dais 		= new Sprite("resources//sprite//cannon//dais.png");
 		_Dais.setPosition(CannonPositionX - 20, CannonPositionY - 60);
 		this.addChild(_Dais);
@@ -44,6 +36,18 @@ private String searchpath;
 		_Mog.animate(new int[] { 0,1,2,3,4,3,2,1 }, 100);
 		this.addChild(_Mog);
 		
+		if(Globals.isHost)
+		{
+			_StartButton = new Sprite("resources//sprite//other//start.png");
+			_StartButton.setPosition(CannonPositionX + MainGame.SCREENWIDTH - 250, 
+					CannonPositionY + MainGame.SCREENHEIGHT - 130);
+			this.addChild(_StartButton);
+			
+			selectArrow = new Sprite("resources//sprite//other//arrow.png");
+			selectArrow.setPosition(CannonPositionX + MainGame.SCREENWIDTH - 350, 
+					CannonPositionY + MainGame.SCREENHEIGHT - 130);
+			this.addChild(selectArrow);
+		}
 		
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
@@ -51,26 +55,21 @@ private String searchpath;
 		}
 	}
 	
-	public void active()
-	{
-
-		_Dais.setColor(TOP_RIGHT, 1, 1, 1);
-		_Dais.setColor(TOP_LEFT, 1, 1, 1);
-		_Dais.setColor(BOTTOM_RIGHT, 1, 1,1);
-		_Dais.setColor(BOTTOM_LEFT, 1, 1,1);
-		
-		_Mog.setColor(TOP_RIGHT, 1, 1,1);
-		_Mog.setColor(TOP_LEFT, 1, 1,1);
-		_Mog.setColor(BOTTOM_RIGHT, 1, 1,1);
-		_Mog.setColor(BOTTOM_LEFT, 1, 1,1);
-	}
-	
 	public void update(float deltatime) {
 		super.update(deltatime);
-		
-		if(currentselect ==0)
-		{
-			
+		for (int i = 0; i < Globals.ServerMessage.size(); i++) {
+			String parts[] = Globals.ServerMessage.get(i).split("\t");
+			int result = Integer.parseInt(parts[0]);
+			if (result == Message.STARTGAME.value()) {
+				String listUser[] = new String[4];
+				for(int j = 1; j < parts.length; j++)
+				{
+					if(parts[j].compareTo("null")!=0)
+						listUser[j - 1] = parts[j];
+				}
+				MainGame.setScene(new GamePlayScene(listUser));
+				Globals.ServerMessage.clear();
+			}
 		}
 	}
 	
@@ -90,9 +89,9 @@ private String searchpath;
 				break;
 			case Input.KEY_ENTER:
 			case Input.KEY_NUMPADENTER:
-				if(currentselect == 0)
+				if(Globals.isHost)
 				{
-					//Globals.sendData(String.valueOf(Message.HOSTGAME.value()));
+					Globals.sendData(String.valueOf(Message.STARTGAME.value()));
 				}
 				break;
 			case Input.KEY_BACK:
