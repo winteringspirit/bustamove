@@ -5,19 +5,17 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import MutilSocket.ClientListener;
-import MutilSocket.SocketClient;
 
 public class Globals {
 	// collision
 	static float normalx = 0, normaly = 0;
 
-	static int BubbleColor = 8;
+	public static int BubbleColor = 4;
 
 	static public GameStatus gameStatus;
 
@@ -211,7 +209,6 @@ public class Globals {
 	public static void initSocket() {
 		final int PORT = 2222;
 		final String HOST = "localhost";
-
 		System.out
 				.println("Usage: java MultiThreadChatClient <host> <portNumber>\n"
 						+ "Now using host=" + HOST + ", portNumber=" + PORT);
@@ -242,8 +239,8 @@ public class Globals {
 
 	public static void closeConnection() throws IOException,
 			InterruptedException {
-		Globals.sendData(String.valueOf(Message.QUITGAME.value()));
-		Globals.sendData(String.valueOf(Message.CANCELHOST.value()));
+		Globals.sendData(String.valueOf(Message.QUIT_GAME.value()));
+		Globals.sendData(String.valueOf(Message.CANCEL_HOST.value()));
 		os.close();
 		is.close();
 		clientSocket.close();

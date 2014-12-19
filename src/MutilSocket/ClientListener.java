@@ -22,6 +22,5 @@ public class ClientListener implements Runnable {
 		} catch (IOException e) {
 			System.err.println("IOException:  " + e);
 		}
-		
 	}
 }

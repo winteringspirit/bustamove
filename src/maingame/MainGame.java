@@ -85,6 +85,15 @@ public class MainGame extends BasicGame
 			}
 			System.exit(0); // Use this if you want to quit the app.
 		}
+		else
+		{
+			if (!Globals.isHost)
+				Globals.sendData(String.valueOf(Message.CLIEN_QUIT_GAME
+						.value()));
+			else
+				Globals.sendData(String.valueOf(Message.HOST_QUIT_GAME
+						.value()));
+		}
 		return false;
     }
 	
@@ -107,6 +116,7 @@ public class MainGame extends BasicGame
 			appgc = new AppGameContainer(new MainGame("Bust a move"));
 			appgc.setDisplayMode(SCREENWIDTH, SCREENHEIGHT, false);
 			appgc.setTargetFrameRate(60);
+			appgc.setShowFPS(false);
 			appgc.setUpdateOnlyWhenVisible(false);
 			appgc.start();
 			//init socket

@@ -35,7 +35,7 @@ public class MainMenuLayer extends Layer {
 			this.addChild(HostList);
 			
 			//send request get host list
-			Globals.sendData(String.valueOf(Message.GETHOSTLIST.value()));
+			Globals.sendData(String.valueOf(Message.GET_HOST_LIST.value()));
 			
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
@@ -62,7 +62,7 @@ public class MainMenuLayer extends Layer {
 		{
 			String parts[] = Globals.ServerMessage.get(i).split("\t");
 			int result = Integer.parseInt(parts[0]);
-			if(result == maingame.Message.GETHOSTLIST.value())
+			if(result == maingame.Message.GET_HOST_LIST.value())
 			{
 				totalhostcount = Integer.parseInt(parts[1]);
 				String listhostname = "";
@@ -119,7 +119,7 @@ public class MainMenuLayer extends Layer {
 				if(currentselect == 0)
 				{
 					Globals.isHost = true;
-					Globals.sendData(String.valueOf(Message.HOSTGAME.value()));
+					Globals.sendData(String.valueOf(Message.HOST_GAME.value()));
 					Globals.ServerMessage.clear();
 					WaitingHostScene _Scene = new WaitingHostScene();
 					String []userJoin = new String[4];
@@ -129,7 +129,7 @@ public class MainMenuLayer extends Layer {
 				}
 				else
 				{
-					Globals.sendData(String.valueOf(Message.JOINGAME.value()) + "\t" + listHostUser.get(currentselect-1));
+					Globals.sendData(String.valueOf(Message.JOIN_GAME.value()) + "\t" + listHostUser.get(currentselect-1));
 					Globals.isHost = false;
 				}
 				break;

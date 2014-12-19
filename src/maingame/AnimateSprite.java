@@ -5,7 +5,8 @@ import org.newdawn.slick.*;
 public class AnimateSprite extends Node {
 	private SpriteSheet _SpriteSheet; 
 	int _Columns, _Rows;
-
+	Image[] _SubImage;
+	
 	Animation _Animation;
 	public AnimateSprite(){
 	}
@@ -14,12 +15,21 @@ public class AnimateSprite extends Node {
 		super(filepath, columns, rows);
 		Image _Image = new Image(filepath);
 		int tileWidth = _Image.getWidth() / columns;
-		int tileHeight = _Image.getHeight()/ rows;
+		int tileHeight = _Image.getHeight() / rows;
 		_SpriteSheet = new SpriteSheet(_Image, tileWidth , tileHeight);
+		
+		
 		_Columns = columns;
 		_Rows = rows;
 		_SpriteSheet.setRotation(90);
 		_Animation = new Animation(_SpriteSheet, 100);
+		
+
+		_SubImage = new Image[columns * rows];
+		for(int i = 0; i < columns * rows; i++)
+		{
+			_SubImage[i] = _SpriteSheet.getSubImage(i % _Columns, i / _Columns);
+		}
 	}
 
 	public void animate(int[] frames, int animationdelay ) {
@@ -29,7 +39,7 @@ public class AnimateSprite extends Node {
 		for(int i = 0; i < frames.length; i++)
 		{
 			dutation[i] = animationdelay;
-			img[i] = _SpriteSheet.getSubImage(frames[i] % _Columns, frames[i] / _Columns);
+			img[i] = _SubImage[frames[i]];
 		}
 		_Animation =  new Animation(img, dutation);
 	}
@@ -42,7 +52,7 @@ public class AnimateSprite extends Node {
 		for(int i = 0; i < frames.length; i++)
 		{
 			dutation[i] = animationdelay;
-			img[i] = _SpriteSheet.getSubImage(frames[i] % _Columns, frames[i] / _Columns);
+			img[i] = _SubImage[frames[i]];
 		}
 		_Animation =  new Animation(img, dutation);
 		_Animation.setLooping(false);
@@ -64,9 +74,9 @@ public class AnimateSprite extends Node {
 	
 	public void setRotation(float angle)
 	{
-		for(int i =0; i < _Animation.getFrameCount(); i++)
+		for(int i = 0; i < _SubImage.length; i++)
 		{
-			_Animation.getImage(i).setRotation(angle);;
+			_SubImage[i].setRotation(angle);;
 		}
 	}
 	

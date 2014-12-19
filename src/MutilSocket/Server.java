@@ -1,5 +1,6 @@
 package MutilSocket;
 
+import maingame.Globals;
 import maingame.Message;
 
 import java.io.BufferedReader;
@@ -9,7 +10,9 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -26,16 +29,22 @@ public class Server {
 	// max client connected.
 	private static final int maxClientsCount = 10;
 
+	// total client connect to server
 	private static final clientThread[] threads = new clientThread[maxClientsCount];
 
-	// hash map user
+	// hash map user from textfile
 	static HashMap<String, String> userList = new HashMap<String, String>();
 
+	// hash map all current host
 	static HashMap<String, String[]> hostUsers = new HashMap<String, String[]>();
 
+	public static ArrayList<String> currentStartedHost = new ArrayList<String>();
+
+	// limit user join per host
 	static int limitUsersPerHost = 4;
 
 	public static void readUserData() {
+		// clear list user
 		userList.clear();
 		// read user data
 		BufferedReader br = null;
@@ -59,7 +68,6 @@ public class Server {
 	}
 
 	public static void main(String args[]) {
-
 		// The default port number.
 		int portNumber = 2222;
 		System.out.println("server game was hosted at port: " + portNumber);
@@ -71,6 +79,7 @@ public class Server {
 			System.out.println(e);
 		}
 
+		// read user data
 		readUserData();
 
 		while (true) {
@@ -115,86 +124,178 @@ class clientThread extends Thread {
 
 	private int Status;
 
+	Random randomGenerator = new Random();
+
 	public clientThread(Socket clientSocket, clientThread[] threads) {
 		this.clientSocket = clientSocket;
 		this.threads = threads;
 		maxClientsCount = threads.length;
 		this.isHost = false;
 		this.Status = 0;
-		client =  new clientThread[4];
+		client = new clientThread[4];
 	}
 
-	private void notifyAddUser(String []parts)
-	{
-		String message = maingame.Message.EDITPLAYER.value() + "\t";
-		for(int i = 0; i < parts.length; i++)
-		{
-			message += parts[0]  + "\t" + parts[1] + "\t" + parts[2]
-					+ "\t" + parts[3] + "\t" ;
+	private void notifyEditUser(String[] parts) {
+		String message = maingame.Message.EDIT_PLAYER.value() + "\t";
+		for (int i = 0; i < parts.length; i++) {
+			message += parts[0] + "\t" + parts[1] + "\t" + parts[2] + "\t"
+					+ parts[3] + "\t";
 		}
 		os.println(message);
 	}
-	
-	private void notifyAbandonHost(String []parts)
-	{
+
+	private void notifyAbandonHost(String[] parts) {
 		os.println(String.valueOf(Message.ABANDON_HOST.value()));
 	}
-	
-	private void notifyStartGame()
-	{
-		if(Server.hostUsers.get(this.clientName) != null)
-		{
+
+	private void notifyStartGame() {
+		if (Server.hostUsers.get(this.clientName) != null) {
+			Server.currentStartedHost.add(this.clientName);
 			String[] user = Server.hostUsers.get(this.clientName);
-			for(int i = 0; i < user.length; i++)
-			{
-				if(user[i] != null)
-				{
-					for(int j = 0; j < maxClientsCount; j++)
-					{
-						if (threads[j] != null 
-								&& threads[j].clientName != null 
-								&& threads[j].clientName.compareTo(user[i])==0) {
+			for (int i = 0; i < user.length; i++) {
+				if (user[i] != null) {
+					for (int j = 0; j < maxClientsCount; j++) {
+						if (threads[j] != null
+								&& threads[j].clientName != null
+								&& threads[j].clientName.compareTo(user[i]) == 0) {
 							client[i] = threads[j];
 						}
 					}
 				}
 			}
-			String userString = "";
-			for(int i = 0; i < user.length; i++)
-			{
-				userString+= user[i]+"\t";
+
+			// pointing client to all client
+			for (int i = 0; i < client.length; i++) {
+				if (client[i] != null)
+					client[i].client = client;
 			}
-			
-			for(int i = 0; i < user.length; i++)
-			{
-				if( client[i] != null)
-				{
-					client[i].os.println(String.valueOf(Message.STARTGAME.value()) + "\t" + userString);
+
+			String userString = "";
+			for (int i = 0; i < user.length; i++) {
+				userString += user[i] + "\t";
+			}
+
+			// send list bubble
+			String bubbleColorMessage = String.valueOf(Message.BUBBLE_COLOR
+					.value()) + "\t";
+			for (int i = 0; i < 8; i++) {
+				int randomInt = randomGenerator.nextInt(Globals.BubbleColor);
+				int percentCreate = randomGenerator.nextInt(100);
+				if (percentCreate < 90)
+					bubbleColorMessage += String.valueOf(randomInt) + "\t";
+				else
+					bubbleColorMessage += "null\t";
+			}
+
+			for (int i = 0; i < client.length; i++) {
+				if (client[i] != null) {
+					client[i].os.println(bubbleColorMessage);
+				}
+			}
+
+			String bulletcolormessage = String.valueOf(Message.BUBBLE_BULLET
+					.value()) + "\t";
+			for (int i = 0; i < 5; i++) {
+				int randomInt = randomGenerator.nextInt(Globals.BubbleColor);
+				bulletcolormessage += String.valueOf(randomInt) + "\t";
+			}
+			// send list bubble bullet
+			for (int i = 0; i < client.length; i++) {
+				if (client[i] != null) {
+					client[i].os.println(bulletcolormessage);
+				}
+			}
+
+			// send user list
+			for (int i = 0; i < client.length; i++) {
+				if (client[i] != null) {
+					client[i].os.println(String.valueOf(Message.START_GAME
+							.value()) + "\t" + userString);
 				}
 			}
 		}
 	}
-	
+
+	private void notifyKeyPressed(int key) {
+		if (Server.hostUsers.get(this.hostName) != null) {
+			String _userList[] = Server.hostUsers.get(this.hostName);
+			String message = String.valueOf(Message.KEY_PRESS.value()) + "\t";
+			for (int i = 0; i < _userList.length; i++) {
+				String keypress = null;
+				if (_userList[i] != null
+						&& _userList[i].compareTo(this.clientName) == 0) {
+					keypress = String.valueOf(key);
+				}
+				message += keypress + "\t";
+			}
+
+			synchronized (this) {
+				for (int m = 0; m < _userList.length; m++) {
+					for (int k = 0; k < maxClientsCount; k++) {
+						if (threads[k] != null
+								&& threads[k].clientName != null
+								&& _userList[m] != null
+								&& threads[k].clientName
+										.compareTo(_userList[m]) == 0) {
+							threads[k].os.println(message);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void notifyCreateBubble(String message) {
+		for (int i = 0; i < client.length; i++) {
+			if (client[i] != null)
+				client[i].os.println(message);
+		}
+	}
+
+	private void addBubbleBullet() {
+		String bulletcolormessage = String.valueOf(Message.BUBBLE_BULLET
+				.value()) + "\t";
+		for (int i = 0; i < 1; i++) {
+			int randomInt = randomGenerator.nextInt(Globals.BubbleColor);
+			bulletcolormessage += String.valueOf(randomInt) + "\t";
+		}
+
+		// send list bubble bullet
+		for (int i = 0; i < client.length; i++) {
+			if (client[i] != null) {
+				client[i].os.println(bulletcolormessage);
+			}
+		}
+	}
+
 	private void sendListHostToUser() {
-		
 		String hostList = "";
 		Set<Entry<String, String[]>> keys = Server.hostUsers.entrySet();
 
 		for (Entry<String, String[]> e : keys) {
+
 			String k = e.getKey();
-			String[] value = e.getValue();
-			
-			int availableHostCount = 0;
-			for(int i = 0; i < value.length; i++)
-			{
-				if(value[i] != null)
-					availableHostCount++;
+			boolean isHostStart = false;
+			for (int j = 0; j < Server.currentStartedHost.size(); j++) {
+				if (Server.currentStartedHost.get(j).compareTo(k) == 0) {
+					isHostStart = true;
+				}
 			}
-			hostList += k + "\t" + availableHostCount + "\t" + value[1] + "\t" + value[2]
-					+ "\t" + value[3] + "\t" ;
+
+			if (!isHostStart) {
+				String[] value = e.getValue();
+
+				int availableHostCount = 0;
+				for (int i = 0; i < value.length; i++) {
+					if (value[i] != null)
+						availableHostCount++;
+				}
+				hostList += k + "\t" + availableHostCount + "\t" + value[1]
+						+ "\t" + value[2] + "\t" + value[3] + "\t";
+			}
 		}
 
-		os.println(maingame.Message.GETHOSTLIST.value() + "\t"
+		os.println(maingame.Message.GET_HOST_LIST.value() + "\t"
 				+ Server.hostUsers.size() + "\t" + hostList);
 	}
 
@@ -218,9 +319,7 @@ class clientThread extends Thread {
 	}
 
 	private void cancelHost() {
-		if (Server.hostUsers.containsKey(clientName))
-			;
-		{
+		if (Server.hostUsers.containsKey(clientName)) {
 			Server.hostUsers.remove(clientName);
 			synchronized (this) {
 				for (int i = 0; i < maxClientsCount; i++) {
@@ -230,29 +329,26 @@ class clientThread extends Thread {
 					}
 				}
 			}
+
+			if (Server.currentStartedHost.contains(clientName)) {
+				Server.currentStartedHost.remove(clientName);
+			}
 		}
 	}
 
-	private void joinGame(String[] part)
-	{
-		if (Server.hostUsers.get(part[1]) != null) {
-			String[] userjoin = Server.hostUsers.get(part[1]);
+	private void joinGame(String[] parts) {
+		if (Server.hostUsers.get(parts[1]) != null) {
+			String[] userjoin = Server.hostUsers.get(parts[1]);
 			boolean isJoinable = false;
 			for (int i = 0; i < Server.limitUsersPerHost; i++) {
 				if (userjoin[i] == null) {
 					isJoinable = true;
 					userjoin[i] = this.clientName;
-					this.hostName = part[1];
-					Server.hostUsers.put(part[1], userjoin);
-					os.println(maingame.Message.JOIN_SUCCESSFULL
-							.value()
-							+ "\t"
-							+ userjoin[0]
-							+ "\t"
-							+ userjoin[1]
-							+ "\t"
-							+ userjoin[2]
-							+ "\t" + userjoin[3] + "\t");
+					this.hostName = parts[1];
+					Server.hostUsers.put(parts[1], userjoin);
+					os.println(maingame.Message.JOIN_SUCCESSFULL.value() + "\t"
+							+ userjoin[0] + "\t" + userjoin[1] + "\t"
+							+ userjoin[2] + "\t" + userjoin[3] + "\t");
 					break;
 				}
 			}
@@ -262,16 +358,17 @@ class clientThread extends Thread {
 			} else {
 				// notify all client in host about there is a player
 				// join
-				System.out.println("there is a joinner join and notify all client");
+				System.out
+						.println("there is a joinner join and notify all client");
 				synchronized (this) {
 					for (int m = 0; m < userjoin.length; m++) {
 						for (int k = 0; k < maxClientsCount; k++) {
 							if (threads[k] != null
 									&& threads[k].clientName != null
-									&& userjoin[m]!=null
-									&& threads[k].clientName.compareTo(userjoin[m]) == 0)
-								{
-								threads[k].notifyAddUser(userjoin);
+									&& userjoin[m] != null
+									&& threads[k].clientName
+											.compareTo(userjoin[m]) == 0) {
+								threads[k].notifyEditUser(userjoin);
 							}
 						}
 					}
@@ -279,9 +376,8 @@ class clientThread extends Thread {
 			}
 		}
 	}
-	
-	private void quitGame()
-	{
+
+	private void quitGame() {
 		synchronized (this) {
 			for (int i = 0; i < maxClientsCount; i++) {
 				if (threads[i] == this) {
@@ -292,16 +388,12 @@ class clientThread extends Thread {
 			}
 		}
 	}
-	
-	private void abandonJoinGame(String[] part)
-	{
-		if(Server.hostUsers.get(this.hostName)!=null)
-		{
+
+	private void abandonJoinGame() {
+		if (Server.hostUsers.get(this.hostName) != null) {
 			String _userList[] = Server.hostUsers.get(this.hostName);
-			for(int i = 0; i < _userList.length; i++)
-			{
-				if(_userList[i] != null && _userList[i] == this.clientName)
-				{
+			for (int i = 0; i < _userList.length; i++) {
+				if (_userList[i] != null && _userList[i] == this.clientName) {
 					_userList[i] = null;
 				}
 			}
@@ -312,20 +404,18 @@ class clientThread extends Thread {
 						if (threads[k] != null
 								&& threads[k].clientName != null
 								&& _userList[m] != null
-								&& threads[k].clientName.compareTo(_userList[m]) == 0)
-							{
-							threads[k].notifyAddUser(_userList);
+								&& threads[k].clientName
+										.compareTo(_userList[m]) == 0) {
+							threads[k].notifyEditUser(_userList);
 						}
 					}
 				}
 			}
 		}
 	}
-	
-	private void abandonHostGame(String[] part)
-	{
-		if(Server.hostUsers.get(this.clientName) != null)
-		{
+
+	private void abandonHostGame() {
+		if (Server.hostUsers.get(this.clientName) != null) {
 			String[] _userList = Server.hostUsers.get(this.clientName);
 			synchronized (this) {
 				for (int m = 0; m < _userList.length; m++) {
@@ -334,8 +424,8 @@ class clientThread extends Thread {
 								&& threads[k].clientName != null
 								&& _userList[m] != null
 								&& _userList[m].compareTo(this.clientName) != 0
-								&& threads[k].clientName.compareTo(_userList[m]) == 0)
-							{
+								&& threads[k].clientName
+										.compareTo(_userList[m]) == 0) {
 							threads[k].notifyAbandonHost(_userList);
 							threads[k].hostName = null;
 						}
@@ -344,9 +434,10 @@ class clientThread extends Thread {
 			}
 			Server.hostUsers.remove(this.clientName);
 		}
-		
+
 		this.sendListHostToUser();
 	}
+
 	
 	public void run() {
 		int maxClientsCount = this.maxClientsCount;
@@ -367,7 +458,7 @@ class clientThread extends Thread {
 				String[] part = data.split("\t");
 				int messege = Integer.parseInt(part[0]);
 				if (messege == maingame.Message.LOGIN.value()) {
-					if (Server.userList.get(part[1])!=null
+					if (Server.userList.get(part[1]) != null
 							&& Server.userList.get(part[1]).compareTo(part[2]) == 0) {
 
 						boolean isAlreadyLogin = false;
@@ -398,36 +489,43 @@ class clientThread extends Thread {
 
 			while (true) {
 				String ms = is.readLine().trim();
-				String part[] = ms.split("\t");
-				
-				int result = Integer.parseInt(part[0]);
-				
+				String parts[] = ms.split("\t");
+
+				int result = Integer.parseInt(parts[0]);
+
 				if (result == Message.ABANDON_JOIN.value()) {
-					abandonJoinGame(part);
+					abandonJoinGame();
 				} else if (result == Message.ABANDON_HOST.value()) {
-					abandonHostGame(part);
-				} else if (result == Message.GETHOSTLIST.value()) {
+					abandonHostGame();
+				} else if (result == Message.GET_HOST_LIST.value()) {
 					this.sendListHostToUser();
-				} else if (result == Message.HOSTGAME.value()) {
+				} else if (result == Message.HOST_GAME.value()) {
 					this.hostGame();
-				} else if (result == Message.JOINGAME.value()) {
-					joinGame(part);
-				} else if (result == Message.CANCELHOST.value()) {
+				} else if (result == Message.JOIN_GAME.value()) {
+					joinGame(parts);
+				} else if (result == Message.CANCEL_HOST.value()) {
 					cancelHost();
-				} else if (result == Message.QUITGAME.value()) {
+				} else if (result == Message.QUIT_GAME.value()) {
 					quitGame();
 					break;
-				} else if(result == Message.STARTGAME.value()){
+				} else if (result == Message.START_GAME.value()) {
 					notifyStartGame();
-				} else if(result == Message.KEY_FIRE.value())
-				{
-					
-				}else if(result == Message.KEY_LEFT.value())
-				{
-					
-				}else if(result==Message.KEY_RIGHT.value())
-				{
-					
+				} else if (result == Message.KEY_FIRE.value()) {
+					notifyKeyPressed(Message.KEY_FIRE.value());
+					addBubbleBullet();
+				} else if (result == Message.KEY_LEFT.value()) {
+					notifyKeyPressed(Message.KEY_LEFT.value());
+				} else if (result == Message.KEY_RIGHT.value()) {
+					notifyKeyPressed(Message.KEY_RIGHT.value());
+				} else if (result == Message.NO_KEY.value()) {
+					notifyKeyPressed(Message.NO_KEY.value());
+				} else if (result == Message.BUBBLE_COLOR.value()) {
+					// only host can recieve because this message send form host
+					notifyCreateBubble(ms);
+				} else if (result == Message.HOST_QUIT_GAME.value()) {
+					// only host can recieve because this message send form host
+				} else if (result == Message.CLIEN_QUIT_GAME.value()) {
+					// only host can recieve because this message send form host
 				}
 			}
 		} catch (IOException e) {

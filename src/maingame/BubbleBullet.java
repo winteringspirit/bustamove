@@ -32,39 +32,7 @@ public class BubbleBullet extends AnimateSprite{
 		Random randomGenerator = new Random();
 		int randomInt = randomGenerator.nextInt(Globals.BubbleColor);
 		
-		String filename = randomInt +  ".png";
-		/*
-		switch(randomInt)
-		{
-		case 0:
-			filename="black.png";
-			break;
-		case 1:
-			filename="blue.png";
-			break;
-		case 2:
-			filename="green.png";
-			break;
-		case 3:
-			filename="orange.png";
-			break;
-		case 4:
-			filename="red.png";
-			break;
-		case 5:
-			filename="violet.png";
-			break;
-		case 6:
-			filename="white.png";
-			break;
-		case 7:
-			filename="yellow.png";
-			break;
-		default:
-			break;
-		}
-		*/
-		
+		String filename = randomInt +  ".png";		
 		try {
 			bl = new BubbleBullet(filename, 4, 3 );
 		} catch (SlickException e) {
@@ -73,6 +41,21 @@ public class BubbleBullet extends AnimateSprite{
 		}
 		
 		bl._Type = randomInt;
+		return bl;
+	}
+	
+	static BubbleBullet create(int color)
+	{
+		BubbleBullet bl = new BubbleBullet();
+		String filename = color +  ".png";		
+		try {
+			bl = new BubbleBullet(filename, 4, 3 );
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		bl._Type = color;
 		return bl;
 	}
 	
