@@ -22,8 +22,8 @@ public class BubbleBullet extends AnimateSprite{
 		_Box.w = 26;
 		_Box.h = 30;
 		_BigBox = new Box();
-		_BigBox.w = 38;
-		_BigBox.h = 38;
+		_BigBox.w = 42;
+		_BigBox.h = 42;
 	}
 
 	static BubbleBullet create()

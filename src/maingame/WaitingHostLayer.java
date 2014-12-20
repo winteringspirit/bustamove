@@ -9,7 +9,6 @@ public class WaitingHostLayer extends Layer {
 	private Text HostList;
 	int currentselect = 0;
 	int totalhostcount = 0;
-	private Sprite background;
 
 	float CannonPositionX = 0;
 	float CannonPositionY = -260;

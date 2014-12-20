@@ -2,6 +2,7 @@ package maingame;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -207,11 +208,31 @@ public class Globals {
 	}
 
 	public static void initSocket() {
+
 		final int PORT = 2222;
-		final String HOST = "localhost";
+		String HOST = "localhost";
+
+		BufferedReader br = null;
+		try {
+			String sCurrentLine;
+			br = new BufferedReader(new FileReader("ipconfig.ini"));
+			while ((sCurrentLine = br.readLine()) != null) {
+				HOST = sCurrentLine;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		
 		System.out
 				.println("Usage: java MultiThreadChatClient <host> <portNumber>\n"
-						+ "Now using host=" + HOST + ", portNumber=" + PORT);
+						+ "Now using host = " + HOST + ", portNumber=" + PORT);
 
 		try {
 			clientSocket = new Socket(HOST, PORT);

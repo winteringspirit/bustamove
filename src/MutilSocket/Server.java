@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -216,6 +217,31 @@ class clientThread extends Thread {
 		}
 	}
 
+	private void notifyHostAbandonGame() {
+
+		if (Server.hostUsers.get(this.clientName) != null) {
+			Server.hostUsers.remove(this.clientName);
+			Server.currentStartedHost.remove(this.clientName);
+		}
+
+		for (int i = 0; i < client.length; i++) {
+			if (client[i] != null) {
+				client[i].os.println(String.valueOf(Message.HOST_ABANDON_GAME
+						.value()));
+				this.isHost = false;
+			}
+		}
+		// client = null;
+	}
+
+	private void notifyClientAbandonGame() {
+		for (int i = 0; i < client.length; i++) {
+			if (client[i] != null)
+				client[i].os.println(String.valueOf(Message.CLIEN_ABANDON_GAME
+						.value()) + "\t" + this.clientName + "\t");
+		}
+	}
+
 	private void notifyKeyPressed(int key) {
 		if (Server.hostUsers.get(this.hostName) != null) {
 			String _userList[] = Server.hostUsers.get(this.hostName);
@@ -316,10 +342,12 @@ class clientThread extends Thread {
 				}
 			}
 		}
+		System.out.println(this.clientName + " is hosting game");
 	}
 
 	private void cancelHost() {
 		if (Server.hostUsers.containsKey(clientName)) {
+			System.out.println(this.clientName + " is cancled hosted game");
 			Server.hostUsers.remove(clientName);
 			synchronized (this) {
 				for (int i = 0; i < maxClientsCount; i++) {
@@ -355,11 +383,11 @@ class clientThread extends Thread {
 
 			if (!isJoinable) {
 				os.println(maingame.Message.JOIN_FAIL.value());
+				System.out.println("this " + parts[1] + " host is full");
 			} else {
 				// notify all client in host about there is a player
-				// join
-				System.out
-						.println("there is a joinner join and notify all client");
+				System.out.println(this.clientName + " is joining "
+						+ this.hostName + " host");
 				synchronized (this) {
 					for (int m = 0; m < userjoin.length; m++) {
 						for (int k = 0; k < maxClientsCount; k++) {
@@ -382,7 +410,7 @@ class clientThread extends Thread {
 			for (int i = 0; i < maxClientsCount; i++) {
 				if (threads[i] == this) {
 					System.out.println(threads[i].clientName
-							+ " is about to log out");
+							+ " is about to quit game");
 					threads[i] = null;
 				}
 			}
@@ -438,7 +466,10 @@ class clientThread extends Thread {
 		this.sendListHostToUser();
 	}
 
-	
+	public void CheckConnection() {
+
+	}
+
 	public void run() {
 		int maxClientsCount = this.maxClientsCount;
 		clientThread[] threads = this.threads;
@@ -449,18 +480,19 @@ class clientThread extends Thread {
 			is = new DataInputStream(clientSocket.getInputStream());
 			os = new PrintStream(clientSocket.getOutputStream());
 			String data;
-
 			// login
 			while (true) {
+				/*
+				if (!clientSocket.isConnected()) {
+					break;
+				}*/
 				// get user name
 				data = is.readLine().trim();
-				System.out.println(data);
 				String[] part = data.split("\t");
 				int messege = Integer.parseInt(part[0]);
 				if (messege == maingame.Message.LOGIN.value()) {
 					if (Server.userList.get(part[1]) != null
 							&& Server.userList.get(part[1]).compareTo(part[2]) == 0) {
-
 						boolean isAlreadyLogin = false;
 						for (int i = 0; i < maxClientsCount; i++) {
 							// notify all client about host
@@ -470,6 +502,10 @@ class clientThread extends Thread {
 								os.println(maingame.Message.LOGIN_FAIL_ALREADY_LOGIN
 										.value());
 								isAlreadyLogin = true;
+
+								System.out
+										.println(clientName
+												+ " login fail because it's already loged");
 								break;
 							}
 						}
@@ -478,16 +514,34 @@ class clientThread extends Thread {
 							this.Status = 1;
 							os.println(maingame.Message.LOGIN_SUCCESSFUL
 									.value());
+							System.out.println(clientName + " login succefull");
 							break;
 						}
 					} else {
 						os.println(maingame.Message.LOGIN_FAIL_WROND_PASS
 								.value());
+						System.out.println(clientName
+								+ " wrongs pass or wrongs user name");
 					}
+				} else if (messege == Message.QUIT_GAME.value()) {
+					quitGame();
+					return;
 				}
 			}
 
 			while (true) {
+				if (!clientSocket.isConnected()) {
+					if (Server.currentStartedHost.contains(clientName)) {
+						Server.currentStartedHost.remove(clientName);
+					}
+					if (Server.hostUsers.containsKey(this.clientName)) {
+						Server.hostUsers.remove(this.clientName);
+					}
+					if (Server.userList.containsKey(this.clientName)) {
+						Server.userList.remove(this.clientName);
+					}
+					break;
+				}
 				String ms = is.readLine().trim();
 				String parts[] = ms.split("\t");
 
@@ -522,10 +576,10 @@ class clientThread extends Thread {
 				} else if (result == Message.BUBBLE_COLOR.value()) {
 					// only host can recieve because this message send form host
 					notifyCreateBubble(ms);
-				} else if (result == Message.HOST_QUIT_GAME.value()) {
-					// only host can recieve because this message send form host
-				} else if (result == Message.CLIEN_QUIT_GAME.value()) {
-					// only host can recieve because this message send form host
+				} else if (result == Message.HOST_ABANDON_GAME.value()) {
+					notifyHostAbandonGame();
+				} else if (result == Message.CLIEN_ABANDON_GAME.value()) {
+					notifyClientAbandonGame();
 				}
 			}
 		} catch (IOException e) {

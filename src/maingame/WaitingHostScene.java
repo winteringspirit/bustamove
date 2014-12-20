@@ -8,8 +8,11 @@ public class WaitingHostScene extends Scene {
 	Text clientName[];
 	int[] bubbleColor;
 	ArrayList<Integer> bubbleBullet = new ArrayList<Integer>();
+	private BackGroundLayer _BackGroundLayer;
 	public WaitingHostScene()
 	{
+		_BackGroundLayer = new BackGroundLayer();
+		this.addChild(_BackGroundLayer);
 		_WaitingHostLayer = new WaitingHostLayer[4];
 		clientName = new Text[4];
 		for(int i = 0 ; i < 4;i++)

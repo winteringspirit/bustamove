@@ -11,26 +11,8 @@ public class GamePlayScene extends Scene {
 	// list bubble color per Row
 	static String bubbleColorPerRow[];
 
-	public GamePlayScene(String listPlayers[]) {
-		Globals.gameStatus = GameStatus.PLAYINGGAME;
-		player = new GamePlayLayer[listPlayers.length];
-		clientName = new Text[listPlayers.length];
-		for (int i = 0; i < listPlayers.length; i++) {
-			if (listPlayers[i] != null) {
-				this.clientName[i] = new Text(100 + 300 * i, 20,
-						listPlayers[i].toUpperCase());
-				this.addChild(clientName[i]);
-				this.player[i] = new GamePlayLayer(new ArrayList<Integer>(), i);
-				this.player[i].setPosition(165 + i * 300, 350);
-				this.addChild(player[i]);
-			}
-		}
-
-		if (Globals.isHost && this.player[0] != null)
-			this.player[0].isHost = true;
-	}
-
 	public GamePlayScene(String listPlayers[], ArrayList<Integer> listBullet) {
+		this.addChild(new BackGroundLayer());
 		Globals.gameStatus = GameStatus.PLAYINGGAME;
 		player = new GamePlayLayer[listPlayers.length];
 		clientName = new Text[listPlayers.length];
@@ -41,6 +23,7 @@ public class GamePlayScene extends Scene {
 				this.addChild(clientName[i]);
 				this.player[i] = new GamePlayLayer(listBullet, i);
 				this.player[i].setPosition(165 + i * 300, 350);
+				this.player[i].name = listPlayers[i];
 				this.addChild(player[i]);
 			}
 		}
@@ -122,6 +105,21 @@ public class GamePlayScene extends Scene {
 					}
 					Globals.ServerMessage.remove(i);
 					i--;
+				} else if (result == Message.HOST_ABANDON_GAME.value()) {
+					MainGame.setScene(new MainMenuScene());
+					Globals.ServerMessage.clear();
+				} else if (result == Message.CLIEN_ABANDON_GAME.value()) {
+					if (parts[1].compareTo(Globals.userName.toLowerCase()) == 0) {
+						MainGame.setScene(new MainMenuScene());
+					} else {
+						for (int k = 0; k < player.length; k++) {
+							if (player[k] != null
+									&& player[k].name.compareTo(parts[1]) == 0) {
+								this.removeChild(player[k]);
+								clientName[k].setText("Quit Game");
+							}
+						}
+					}
 				}
 			}
 		}

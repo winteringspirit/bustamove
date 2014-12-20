@@ -11,7 +11,6 @@ public class MainMenuLayer extends Layer {
 	int currentselect = 0;
 	
 	int totalhostcount = 0;
-	private Sprite background;
 	private Sprite hostbutton;
 	private Sprite selectArrow;
 	private ArrayList<String> listHostUser = new ArrayList<String>();
@@ -19,10 +18,6 @@ public class MainMenuLayer extends Layer {
 	{
 		String searchpath = "resources//sprite//other//";
 		try {
-			background = new Sprite("resources//sprite//other//background.png");
-			background.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT / 2);
-			this.addChild(background);
-			
 			hostbutton= new Sprite("resources//sprite//other//hostbutton.png");
 			hostbutton.setPosition(MainGame.SCREENWIDTH - 150, MainGame.SCREENHEIGHT - 30);
 			this.addChild(hostbutton);

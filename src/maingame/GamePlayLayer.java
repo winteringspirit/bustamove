@@ -58,7 +58,15 @@ public class GamePlayLayer extends Layer {
 	boolean isLost = false;
 
 	private int _Type;
-
+	
+	public String name = "";
+	
+	private boolean isReload = false;
+	
+	private float reloadTime = 200;
+	
+	private float reloadTimeCount = 0;
+	
 	public GamePlayLayer(ArrayList<Integer> listwaitingbullet, int type) {
 		isHost = false;
 		try {
@@ -197,7 +205,7 @@ public class GamePlayLayer extends Layer {
 
 	public void turnLeft() {
 		if (!this.isLost) {
-			if (_RotateAngle > -80) {
+			if (_RotateAngle > -70) {
 				_RotateAngle -= _RotateSpeed;
 				_Barrel.setRotation(_RotateAngle);
 				_Arrows.setRotation(_RotateAngle);
@@ -217,7 +225,7 @@ public class GamePlayLayer extends Layer {
 
 	public void turnRight() {
 		if (!this.isLost) {
-			if (_RotateAngle < 80) {
+			if (_RotateAngle < 70) {
 				_RotateAngle += _RotateSpeed;
 				_Barrel.setRotation(_RotateAngle);
 				_Arrows.setRotation(_RotateAngle);
@@ -247,7 +255,8 @@ public class GamePlayLayer extends Layer {
 	}
 
 	public void fire() {
-		if (!this.isLost) {
+		if (!this.isLost && this.isReload) {
+			this.isReload = false;
 			float bbvx = (float) Math.sin((90 - _RotateAngle) * Math.PI / 180)
 					* _BubbleBulletSpeed;
 			float bbxy = (float) Math.cos((90 - _RotateAngle) * Math.PI / 180)
@@ -284,12 +293,49 @@ public class GamePlayLayer extends Layer {
 		creatNewBubbleBullet();
 	}
 
+	private void reloadBullet(float deltatime)
+	{
+		if(!isReload)
+		{
+			reloadTimeCount += deltatime;
+			if(reloadTimeCount > reloadTime)
+			{
+				isReload = true;
+				reloadTimeCount = 0;
+			}
+		}
+	}
+	
 	public void update(float deltatime) {
 		if (!this.isLost) {
 			super.update(deltatime);
-
 			autoGenerateBuble(deltatime);
 			collisionUpdate(deltatime);
+			reloadBullet(deltatime);
+		} else {
+			requestCreateBubble(deltatime);
+		}
+	}
+	
+	private void requestCreateBubble(float deltatime)
+	{
+		_SpawnTimeCount += deltatime;
+		if (_SpawnTimeCount >= _SpawnTime) {
+			_SpawnTimeCount = 0;
+			if (this.isHost) {
+				String bubbleColorMessage = String.valueOf(Message.BUBBLE_COLOR
+						.value()) + "\t";
+				for (int i = 0; i < 8; i++) {
+					int randomInt = randomGenerator
+							.nextInt(Globals.BubbleColor);
+					int percentCreate = randomGenerator.nextInt(100);
+					if (percentCreate < 90)
+						bubbleColorMessage += String.valueOf(randomInt) + "\t";
+					else
+						bubbleColorMessage += "null\t";
+				}
+				Globals.sendData(bubbleColorMessage);
+			}
 		}
 	}
 
@@ -308,7 +354,7 @@ public class GamePlayLayer extends Layer {
 			case 1:
 				_MainCharacterLost = new AnimateSprite(charactersearchpath
 						+ "CatchLost.png", 8, 1);
-				_MainCharacterLost.animate(new int[] { 0, 1, 2, 3, 4, 5, 6, 7},
+				_MainCharacterLost.animate(new int[] { 5, 6, 7, 6},
 						100);
 				_MainCharacterLost.setPosition(CannonPositionX - 146, CannonPositionY + 10);
 				this.addChild(_MainCharacterLost);
@@ -339,6 +385,14 @@ public class GamePlayLayer extends Layer {
 				break;
 			}
 
+			Sprite _blackBoard = new Sprite("resources//sprite//other//board.png");
+			_blackBoard.setPosition(CannonPositionX - 15, CannonPositionY + 250);
+			this.addChild(_blackBoard);
+			
+			Sprite _lostWords = new Sprite("resources//sprite//other//lost.png");
+			_lostWords.setPosition(CannonPositionX - 15, CannonPositionY + 250);
+			this.addChild(_lostWords);
+			
 			this.removeChild(_MainCharacter);
 
 			for (int i = 0; i < _ListBullet.size(); i++) {
@@ -448,13 +502,11 @@ public class GamePlayLayer extends Layer {
 		if (_ListBubble.size() > 0) {
 			BubbleBullet bl = _ListBubble.get(0);
 			for (int i = 1; i < _ListBubble.size(); i++) {
-
 				if (bl.getPositionY() > _ListBubble.get(i).getPositionY()) {
 					bl = _ListBubble.get(i);
 				}
-
 			}
-			if (Globals.AABBCheck(bl._Box, _BotFence._Box)) {
+			if (bl._Box.y  < _BotFence._Box.y + _BotFence._Box.h) {
 				this.isLost = true;
 				lostInit();
 			}
@@ -496,7 +548,8 @@ public class GamePlayLayer extends Layer {
 		}
 
 		// send request generate list bubble color to server
-		if (this.isHost) {
+		if (this.isHost) 
+		{
 			String bubbleColorMessage = String.valueOf(Message.BUBBLE_COLOR
 					.value()) + "\t";
 			for (int i = 0; i < 8; i++) {

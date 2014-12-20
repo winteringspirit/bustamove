@@ -3,8 +3,11 @@ package maingame;
 public class MainMenuScene extends Scene{
 	
 	private MainMenuLayer _MainMenuLayer;
+	private BackGroundLayer _BackGroundLayer;
 	public MainMenuScene()
 	{
+		_BackGroundLayer = new BackGroundLayer();
+		this.addChild(_BackGroundLayer);
 		_MainMenuLayer = new MainMenuLayer();
 		this.addChild(_MainMenuLayer);
 		Globals.gameStatus = GameStatus.MAINMENU;

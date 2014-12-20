@@ -16,16 +16,10 @@ public class LoginLayer extends Layer{
 	private String pass;
 	int currentselect = 0;
 	
-	private Sprite background;
-	
 	public LoginLayer()
 	{
 		searchpath = "resources//sprite//other//";
 		try {
-			background = new Sprite("resources//sprite//other//background.png");
-			background.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT / 2);
-			this.addChild(background);
-			
 			loginform = new Sprite(searchpath + "loginform.png");
 			loginform.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT /2 );
 			this.addChild(loginform);

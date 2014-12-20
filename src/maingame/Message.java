@@ -23,8 +23,8 @@ public enum Message {
 	KEY_PRESS(17),
 	BUBBLE_COLOR(18),
 	BUBBLE_BULLET(19),
-	HOST_QUIT_GAME(20),
-	CLIEN_QUIT_GAME(21);
+	HOST_ABANDON_GAME(20),
+	CLIEN_ABANDON_GAME(21);
 	
 	private int _value;
 	
