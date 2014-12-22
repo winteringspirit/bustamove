@@ -74,13 +74,13 @@ public class WaitingHostLayer extends Layer {
 
 			if (Globals.isHost) {
 				_StartButton = new Sprite("resources//sprite//other//start.png");
-				_StartButton.setPosition(CannonPositionX + MainGame.SCREENWIDTH
-						- 250, CannonPositionY + MainGame.SCREENHEIGHT - 130);
+				_StartButton.setPosition(CannonPositionX + Globals.SCREENWIDTH
+						- 250, CannonPositionY + Globals.SCREENHEIGHT - 130);
 				this.addChild(_StartButton);
 
 				selectArrow = new Sprite("resources//sprite//other//arrow.png");
-				selectArrow.setPosition(CannonPositionX + MainGame.SCREENWIDTH
-						- 350, CannonPositionY + MainGame.SCREENHEIGHT - 130);
+				selectArrow.setPosition(CannonPositionX + Globals.SCREENWIDTH
+						- 350, CannonPositionY + Globals.SCREENHEIGHT - 130);
 				this.addChild(selectArrow);
 			}
 

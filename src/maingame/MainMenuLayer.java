@@ -19,11 +19,11 @@ public class MainMenuLayer extends Layer {
 		String searchpath = "resources//sprite//other//";
 		try {
 			hostbutton= new Sprite("resources//sprite//other//hostbutton.png");
-			hostbutton.setPosition(MainGame.SCREENWIDTH - 150, MainGame.SCREENHEIGHT - 30);
+			hostbutton.setPosition(Globals.SCREENWIDTH - 150, Globals.SCREENHEIGHT - 30);
 			this.addChild(hostbutton);
 			
 			selectArrow = new Sprite("resources//sprite//other//arrow.png");
-			selectArrow.setPosition(MainGame.SCREENWIDTH - 100, MainGame.SCREENHEIGHT - 30);
+			selectArrow.setPosition(Globals.SCREENWIDTH - 100, Globals.SCREENHEIGHT - 30);
 			this.addChild(selectArrow);
 			
 			HostList = new Text(100 , 50,"");
@@ -46,11 +46,11 @@ public class MainMenuLayer extends Layer {
 		
 		if(currentselect == 0)
 		{
-			selectArrow.setPosition(MainGame.SCREENWIDTH - 250, MainGame.SCREENHEIGHT - 30);
+			selectArrow.setPosition(Globals.SCREENWIDTH - 250, Globals.SCREENHEIGHT - 30);
 		}
 		else
 		{
-			selectArrow.setPosition(50, MainGame.SCREENHEIGHT - 43 - 20 * currentselect);
+			selectArrow.setPosition(50, Globals.SCREENHEIGHT - 43 - 20 * currentselect);
 		}
 	
 		for(int i = 0; i < Globals.ServerMessage.size(); i++)

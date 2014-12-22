@@ -65,7 +65,7 @@ public class AnimateSprite extends Node {
 	
 	public void render()
 	{
-		float YTransform = (_Box.y - MainGame.SCREENHEIGHT  + this.getParent().getPositionY()) * (-1) - _SpriteSheet.getHeight()/ _Rows / 2;
+		float YTransform = (_Box.y - Globals.SCREENHEIGHT  + this.getParent().getPositionY()) * (-1) - _SpriteSheet.getHeight()/ _Rows / 2;
 		float XTransform = _Box.x + this.getParent().getPositionX() - _Box.w / 2;
 		
 		_Animation.getCurrentFrame().setCenterOfRotation(_CenterRotateX, _CenterRotateY);

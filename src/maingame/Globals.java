@@ -20,6 +20,11 @@ public class Globals {
 
 	static public GameStatus gameStatus;
 
+	static public int FrameRate = 30;
+
+	static final int SCREENWIDTH = 1200;
+	static final int SCREENHEIGHT = 600;
+	
 	// The client socket
 	public static Socket clientSocket = null;
 	// The output stream

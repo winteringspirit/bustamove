@@ -9,7 +9,7 @@ public class BackGroundLayer extends Layer {
 			background = new AnimateSprite(
 					"resources//sprite//background//background.png", 3, 1);
 			background.setPosition(0,
-					MainGame.SCREENHEIGHT / 2);
+					Globals.SCREENHEIGHT / 2);
 			background.animate(new int[] { 0, 1, 2 }, 100);
 			this.addChild(background);
 		} catch (SlickException e) {

@@ -8,8 +8,6 @@ import org.newdawn.slick.*;
 
 public class MainGame extends BasicGame {
 	List<GamePlayLayer> _Players = new ArrayList<GamePlayLayer>();
-	static final int SCREENWIDTH = 1200;
-	static final int SCREENHEIGHT = 600;
 
 	static public Scene _Scene;
 	static public Graphics _g;
@@ -101,8 +99,8 @@ public class MainGame extends BasicGame {
 			Globals.initSocket();
 			AppGameContainer appgc;
 			appgc = new AppGameContainer(new MainGame("Bust a move"));
-			appgc.setDisplayMode(SCREENWIDTH, SCREENHEIGHT, false);
-			appgc.setTargetFrameRate(60);
+			appgc.setDisplayMode(Globals.SCREENWIDTH, Globals.SCREENHEIGHT, false);
+			appgc.setTargetFrameRate(Globals.FrameRate);
 			appgc.setShowFPS(false);
 			appgc.setUpdateOnlyWhenVisible(false);
 			appgc.start();

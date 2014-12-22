@@ -37,10 +37,10 @@ public class GamePlayLayer extends Layer {
 	float _SpawnTime = 5000;
 	int _SpawnTimeCount;
 	int _SpawnCount = 8;
-	float _BubbleBulletSpeed = 10.0f;
+	float _BubbleBulletSpeed = 20.0f;
 	float _BubbleMovingSpeed = 0;
 	float _DeltaSpawnPosition = 0;
-	float _RotateSpeed = 1;
+	float _RotateSpeed = 2;
 	int SameColorDestroyCount = 2;
 	// total same color bubbles that you need to fire at to destroy, value 2
 	// means 3 bubble(include 2 instance bubble and one you fire)
@@ -187,7 +187,7 @@ public class GamePlayLayer extends Layer {
 		this.addSpecialChild(_BotFence);
 
 		_SpawnTimeCount = 0;
-		_BubbleMovingSpeed = ((28000 / 60) / _SpawnTime);
+		_BubbleMovingSpeed = ((28000 / Globals.FrameRate) / _SpawnTime);
 
 		for (int i = 0; i < listwaitingbullet.size(); i++)
 			listWaitingBullet.add(listwaitingbullet.get(i));

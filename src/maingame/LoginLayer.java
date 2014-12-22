@@ -21,16 +21,16 @@ public class LoginLayer extends Layer{
 		searchpath = "resources//sprite//other//";
 		try {
 			loginform = new Sprite(searchpath + "loginform.png");
-			loginform.setPosition(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT /2 );
+			loginform.setPosition(Globals.SCREENWIDTH / 2, Globals.SCREENHEIGHT /2 );
 			this.addChild(loginform);
 			
 			selectboard = new Sprite(searchpath + "selection.png");
-			selectboard.setPosition(MainGame.SCREENWIDTH / 2 + 68, MainGame.SCREENHEIGHT /2 + 40);
+			selectboard.setPosition(Globals.SCREENWIDTH / 2 + 68, Globals.SCREENHEIGHT /2 + 40);
 			this.addChild(selectboard);
 			
-			username = new Text(MainGame.SCREENWIDTH / 2 , MainGame.SCREENHEIGHT /2 -50,"");
-			password = new Text(MainGame.SCREENWIDTH / 2, MainGame.SCREENHEIGHT /2-10 ,"");
-			loginmessage = new Text(MainGame.SCREENWIDTH / 2 - 100 , MainGame.SCREENHEIGHT /2 + 30, "");
+			username = new Text(Globals.SCREENWIDTH / 2 , Globals.SCREENHEIGHT /2 -50,"");
+			password = new Text(Globals.SCREENWIDTH / 2, Globals.SCREENHEIGHT /2-10 ,"");
+			loginmessage = new Text(Globals.SCREENWIDTH / 2 - 100 , Globals.SCREENHEIGHT /2 + 30, "");
 			this.addChild(username);
 			this.addChild(password);
 			this.addChild(loginmessage);
@@ -49,13 +49,13 @@ public class LoginLayer extends Layer{
 		switch(currentselect)
 		{
 		case 0:
-			selectboard.setPositionY(MainGame.SCREENHEIGHT /2 + 40);
+			selectboard.setPositionY(Globals.SCREENHEIGHT /2 + 40);
 			break;
 		case 1:
-			selectboard.setPositionY(MainGame.SCREENHEIGHT /2 );
+			selectboard.setPositionY(Globals.SCREENHEIGHT /2 );
 			break;
 		case 2:
-			selectboard.setPositionY(MainGame.SCREENHEIGHT /2 - 40);
+			selectboard.setPositionY(Globals.SCREENHEIGHT /2 - 40);
 			break;
 		}
 		
@@ -68,13 +68,13 @@ public class LoginLayer extends Layer{
 			} else if (result == Message.LOGIN_FAIL_WROND_PASS.value()) {
 				Globals.ServerMessage.clear();
 				loginmessage.setText("Wrong Password");
-				loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150,
-						MainGame.SCREENHEIGHT / 2 + 30);
+				loginmessage.setPosition(Globals.SCREENWIDTH / 2 - 150,
+						Globals.SCREENHEIGHT / 2 + 30);
 			} else if (result == Message.LOGIN_FAIL_ALREADY_LOGIN.value()) {
 				Globals.ServerMessage.clear();
 				loginmessage.setText("Already Logined");
-				loginmessage.setPosition(MainGame.SCREENWIDTH / 2 - 150,
-						MainGame.SCREENHEIGHT / 2 + 30);
+				loginmessage.setPosition(Globals.SCREENWIDTH / 2 - 150,
+						Globals.SCREENHEIGHT / 2 + 30);
 			}
 		}
 	}
